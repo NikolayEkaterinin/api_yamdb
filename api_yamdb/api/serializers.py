@@ -1,7 +1,4 @@
-from tokenize import Comment
-from unicodedata import category
 
-from django.contrib.admin.utils import lookup_field
 from rest_framework import serializers
 from django.db.models import Avg
 
