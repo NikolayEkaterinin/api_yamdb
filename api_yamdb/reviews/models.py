@@ -1,54 +1,45 @@
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .validators import validate_year
+from django.db import models
+
 from user.models import User
+
+from .validators import validate_year
 
 
 LETTERS_LIMIT = 15
+MAX_LENGTH = 200
 
 
-class Category(models.Model):
-    name = models.CharField(
-        'Имя категории',
-        max_length=200
-    )
-    slug = models.SlugField(
-        'URL категории',
-        unique=True,
-        db_index=True
-    )
+class BaseModel(models.Model):
+    name = models.CharField('Название',
+                            max_length=MAX_LENGTH)
+    slug = models.SlugField('URL'
+                            ,unique=True, db_index=True)
 
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Category(BaseModel):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
-    def __str__(self):
-        return f'{self.name} {self.name}'
 
-
-class Genre(models.Model):
-    name = models.CharField(
-        'Название жанра',
-        max_length=200
-    )
-    slug = models.SlugField(
-        'URL жанра',
-        unique=True,
-        db_index=True
-    )
-
+class Genre(BaseModel):
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
-
-    def __str__(self):
-        return f'{self.name} {self.name}'
+        ordering = ['name']
 
 
 class Title(models.Model):
     name = models.CharField(
-        'Название произведения',
-        max_length=200,
+        'Название',
+        max_length=MAX_LENGTH,
         db_index=True
     )
     year = models.IntegerField(
@@ -78,6 +69,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+        ordering = ['name']
         indexes = [
             models.Index(fields=['name', 'year']),
             models.Index(fields=['name'], name='name_idx'),
@@ -121,10 +113,12 @@ class Review(models.Model):
                 fields=['author', 'title'], name='unique review'
             )
         ]
-        ordering = ['-pub_date']
+        verbose_name = 'Оценка'
+        verbose_name_plural = 'Оценки'
+        ordering = ('-pub_date', )
 
     def __str__(self):
-        return self.text[:15]
+        return self.text[LETTERS_LIMIT]
 
 
 class Comments(models.Model):
@@ -149,6 +143,8 @@ class Comments(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
         ordering = ['-pub_date']
 
     def __str__(self):
