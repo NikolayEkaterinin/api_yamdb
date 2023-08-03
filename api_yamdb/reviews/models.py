@@ -118,7 +118,7 @@ class Review(models.Model):
         ordering = ('-pub_date', )
 
     def __str__(self):
-        return self.text[LETTERS_LIMIT]
+        return self.text[:LETTERS_LIMIT]
 
 
 class Comments(models.Model):
