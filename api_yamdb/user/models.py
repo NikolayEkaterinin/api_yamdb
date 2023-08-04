@@ -40,7 +40,8 @@ class User(AbstractUser):
                            verbose_name='Биография',
                            help_text='Расскажите о себе',
                            blank=True,)
-    role = models.CharField(max_length=100,
+    max_role_length = max(len(role[0]) for role in USER_ROLE)
+    role = models.CharField(max_length=max_role_length,
                             verbose_name='Роль',
                             choices=USER_ROLE,
                             default=USER,
@@ -49,6 +50,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+        ordering = ['username']
 
     @property
     def is_admin(self):
