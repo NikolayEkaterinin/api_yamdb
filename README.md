@@ -6,6 +6,8 @@
 Например, в категории "Книги" могут быть произведения
 Благодарные или возмущённые читатели оставляют к произведениям текстовые отзывы и выставляют произведению рейтинг.
 
+# Используемые технологии
+## Python 3, Django 2.2 LTS, Django REST Framework, SQLite3, Simple-JWT, GIT
 # Ресурсы API YaMDb
 **AUTH**: аутентификация.
 
@@ -40,7 +42,20 @@ YaMDB отправляет письмо с кодом подтверждения
 
 
 # Установка
-##Склонируйте репозиторий. Находясь в папке с кодом создайте виртуальное окружение `python -m venv venv`
-##активируйте его (Windows: `source venv\scripts\activate`; Linux/Mac: `sorce venv/bin/activate`)
-##установите зависимости `python -m pip install -r requirements.txt`.
+## Установить и активировать виртуальное окружение
+## Установить зависимости из файла requirements.txt
+'python -m pip install --upgrade pip'
 
+'pip install -r requirements.txt'
+
+## Выполнить миграции:
+'python manage.py migrate'
+## В папке с файлом manage.py выполнить команду:
+'python manage.py runserver'
+## Для загрузки тестовых данных из csv-файлов выполнить команду:
+'python manage.py load_data'
+
+# Авторы проекта:
+## Екатеринин Николай - Review. Отвечает за блок Comments
+## Борисов Марат - Отвечает за блоки Categories/Genres/Titles
+## Рогов Григорий - Отвечает за блоки Auth/Users
