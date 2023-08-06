@@ -16,8 +16,8 @@ from reviews.models import Category, Genre, Review, Title
 from user.models import User
 from .mixins import ModelMixinSet
 from .filters import TitleFilter
-from .permissions import (IsAdminPermission, IsAdminUserOrReadOnly,
-                          IsAuthorAdminSuperuserOrReadOnlyPermission, )
+from .permissions import (IsAdmin, IsAdminUserOrReadOnly,
+                          IsAuthorAdminSuperuserOrReadOnly, )
 from .serializers import (
     CategorySerializer, CommentSerializer, GenreSerializer,
     ReviewSerializer, TokenSerializer, TitleReadSerializer,
@@ -57,7 +57,7 @@ class SignUpView(APIView):
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = (IsAdminPermission,)
+    permission_classes = (IsAdmin,)
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
     search_fields = ('username',)
@@ -153,7 +153,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [
-        IsAuthorAdminSuperuserOrReadOnlyPermission,
+        IsAuthorAdminSuperuserOrReadOnly,
         permissions.IsAuthenticatedOrReadOnly
     ]
     pagination_class = LimitOffsetPagination
@@ -174,7 +174,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [
-        IsAuthorAdminSuperuserOrReadOnlyPermission,
+        IsAuthorAdminSuperuserOrReadOnly,
         permissions.IsAuthenticatedOrReadOnly
     ]
     pagination_class = LimitOffsetPagination
