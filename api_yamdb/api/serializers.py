@@ -72,25 +72,6 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = 'slug'
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    genre = GenreSerializer(
-        read_only=True,
-        many=True
-    )
-    rating = serializers.SerializerMethodField()
-
-    class Meta:
-        fields = '__all__'
-        model = Title
-
-    def get_rating(self, obj):
-        if obj.review.count() == 0:
-            return None
-        rev = Review.objects.filter(title=obj).aggregate(rating=Avg('score'))
-        return rev['rating']
-
-
 class TitleReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(
