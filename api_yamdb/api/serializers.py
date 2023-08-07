@@ -1,6 +1,8 @@
 
-from rest_framework import serializers
+from rest_framework import serializers, status
+from django.db import IntegrityError
 from django.db.models import Avg
+from rest_framework.response import Response
 
 from reviews.models import Comments, Genre, Category, Title, Review
 from user.models import User
@@ -35,6 +37,19 @@ class UserCreateSerializer(serializers.ModelSerializer):
                   'last_name',
                   'bio',
                   'role')
+
+    def create(self, request, *args, **kwargs):
+        serializer = UserCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            user, _ = User.objects.get_or_create(
+                **serializer.validated_data)
+        except IntegrityError:
+            return Response(
+                'Такой логин или email уже существуют',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def validate_username(self, value):
         if value == 'me':

@@ -63,19 +63,6 @@ class UsersViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = LimitOffsetPagination
 
-    def create(self, request, *args, **kwargs):
-        serializer = UserCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            user, _ = User.objects.get_or_create(
-                **serializer.validated_data)
-        except IntegrityError:
-            return Response(
-                'Такой логин или email уже существуют',
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
     @action(detail=False, methods=['get', 'patch'], url_path='me',
             url_name='me', permission_classes=(permissions.IsAuthenticated,))
     def about_me(self, request):
@@ -110,21 +97,13 @@ class TokenView(APIView):
 class CategoryViewSet(ModelMixinSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminUserOrReadOnly,)
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
-    lookup_field = 'slug'
-    pagination_class = LimitOffsetPagination
+    permission_classes = [IsAdminUserOrReadOnly]
 
 
 class GenreViewSet(ModelMixinSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminUserOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
-    lookup_field = 'slug'
-    pagination_class = LimitOffsetPagination
 
 
 class TitleViewSet(viewsets.ModelViewSet):
