@@ -5,7 +5,6 @@ from user.models import User
 
 from .validators import validate_year
 
-
 LETTERS_LIMIT = 15
 MAX_LENGTH = 200
 
@@ -13,8 +12,8 @@ MAX_LENGTH = 200
 class BaseModel(models.Model):
     name = models.CharField('Название',
                             max_length=MAX_LENGTH)
-    slug = models.SlugField('URL'
-                            ,unique=True, db_index=True)
+    slug = models.SlugField('URL',
+                            unique=True, db_index=True)
 
     class Meta:
         abstract = True
