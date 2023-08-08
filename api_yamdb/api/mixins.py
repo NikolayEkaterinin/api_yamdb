@@ -4,8 +4,6 @@ from rest_framework.viewsets import GenericViewSet
 
 class ModelMixinSet(mixins.ListModelMixin, mixins.CreateModelMixin,
                     mixins.DestroyModelMixin, GenericViewSet):
-    pass
-
     lookup_field = 'slug'
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
