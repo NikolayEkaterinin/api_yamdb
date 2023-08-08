@@ -108,7 +108,7 @@ class GenreViewSet(ModelMixinSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
@@ -118,11 +118,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve'):
             return TitleReadSerializer
         return TitleWriteSerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(rating=Avg('reviews__score'))
-        return queryset
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

@@ -1,7 +1,6 @@
 
 from rest_framework import serializers, status
 from django.db import IntegrityError
-from django.db.models import Avg
 from rest_framework.response import Response
 
 from reviews.models import Comments, Genre, Category, Title, Review
@@ -129,12 +128,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('title', 'author')
 
     def validate(self, data):
-        if Review.objects.filter(
-            author=self.context['request'].user,
-            title_id=self.context['view'].kwargs.get('title_id')
-        ).exists() and self.context['request'].method == 'POST':
-            raise serializers.ValidationError(
-                'Нельзя оставить два отзыва на одно произведение.')
+        request = self.context['request']
+        if request.method == 'POST':
+            if Review.objects.filter(
+                author=request.user,
+                title_id=self.context['view'].kwargs.get('title_id')
+            ).exists():
+                raise serializers.ValidationError(
+                    'Нельзя оставить два отзыва на одно произведение.')
         return data
 
 
