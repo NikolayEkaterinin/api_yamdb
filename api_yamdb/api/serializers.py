@@ -1,7 +1,5 @@
 from django.core.validators import validate_email
-from rest_framework import serializers, status
-from django.db import IntegrityError
-from rest_framework.response import Response
+from rest_framework import serializers
 
 from reviews.models import Comments, Genre, Category, Title, Review
 from user.models import User

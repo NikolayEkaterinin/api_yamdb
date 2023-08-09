@@ -9,7 +9,7 @@ LETTERS_LIMIT = 15
 MAX_LENGTH = 200
 
 
-class BaseModel(models.Model):
+class ForCategoryAndGenreBaseModel(models.Model):
     name = models.CharField('Название',
                             max_length=MAX_LENGTH)
     slug = models.SlugField('URL',
@@ -22,13 +22,13 @@ class BaseModel(models.Model):
         return f'{self.name}'
 
 
-class Category(BaseModel):
+class Category(ForCategoryAndGenreBaseModel):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
 
-class Genre(BaseModel):
+class Genre(ForCategoryAndGenreBaseModel):
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
@@ -78,28 +78,36 @@ class Title(models.Model):
         return self.name
 
 
-class Review(models.Model):
-    """Модель отзывов."""
+class BaseComment(models.Model):
     author = models.ForeignKey(
         User,
-        related_name='reviews',
         on_delete=models.CASCADE,
-        verbose_name='Автор отзыва',
+        verbose_name='Автор'
     )
+    text = models.TextField('Текст')
+    pub_date = models.DateTimeField(
+        'Дата',
+        auto_now_add=True,
+        db_index=True
+    )
+
+    class Meta:
+        abstract = True
+        ordering = ['-pub_date']
+
+    def __str__(self):
+        return self.text[:LETTERS_LIMIT]
+
+
+class Review(BaseComment):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Произведение для оценки'
     )
-    text = models.TextField('Ваш отзыв')
-    pub_date = models.DateTimeField(
-        'Дата публикации',
-        auto_now_add=True,
-        db_index=True,
-    )
     score = models.PositiveSmallIntegerField(
-        'Оценка произведения',
+        'Оценка',
         validators=[
             MinValueValidator(1, message='Оценка должна быть от 1'),
             MaxValueValidator(10, message='Оценка должна быть до 10')
@@ -109,42 +117,21 @@ class Review(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'], name='unique review'
+                fields=['author', 'title'], name='unique_review'
             )
         ]
         verbose_name = 'Оценка'
         verbose_name_plural = 'Оценки'
-        ordering = ('-pub_date', )
-
-    def __str__(self):
-        return self.text[:LETTERS_LIMIT]
 
 
-class Comments(models.Model):
-    """Модель комментариев."""
-    author = models.ForeignKey(
-        User,
-        related_name='comments',
-        on_delete=models.CASCADE,
-        verbose_name='Автор комментария'
-    )
+class Comments(BaseComment):
     review = models.ForeignKey(
         Review,
-        related_name='comments',
         on_delete=models.CASCADE,
-        verbose_name='Комментируемый отзыв'
-    )
-    text = models.TextField('Ваш комментарий')
-    pub_date = models.DateTimeField(
-        'Дата комментария',
-        auto_now_add=True,
-        db_index=True
+        related_name='comments',
+        verbose_name='Отзыв'
     )
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['-pub_date']
-
-    def __str__(self):
-        return self.text[:LETTERS_LIMIT]
