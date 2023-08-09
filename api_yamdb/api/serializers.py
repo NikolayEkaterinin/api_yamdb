@@ -40,8 +40,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
                   'bio',
                   'role')
 
-
-
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(
