@@ -4,7 +4,9 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
+
 from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
@@ -12,17 +14,22 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import AccessToken
+
 from reviews.models import Category, Genre, Review, Title
 from user.models import User
+
 from .mixins import ModelMixinSet
 from .filters import TitleFilter
-from .permissions import (IsAdmin, IsAdminUserOrReadOnly,
-                          IsAuthorAdminSuperuserOrReadOnly, )
+from .permissions import (
+    IsAdmin, IsAdminUserOrReadOnly, IsAuthorAdminSuperuserOrReadOnly,
+)
 from .serializers import (
     CategorySerializer, CommentSerializer, GenreSerializer,
     ReviewSerializer, TokenSerializer, TitleReadSerializer,
-    TitleWriteSerializer, UserCreateSerializer, UsersSerializer)
+    TitleWriteSerializer, UserCreateSerializer, UsersSerializer,
+)
 
+ERROR_LOGIN_EMAIL = 'Такой логин или email уже существуют'
 
 class SignUpView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -37,7 +44,7 @@ class SignUpView(APIView):
                 **serializer.validated_data)
         except IntegrityError:
             return Response(
-                'Такой логин или email уже существуют',
+                ERROR_LOGIN_EMAIL,
                 status=status.HTTP_400_BAD_REQUEST
             )
         confirmation_code = default_token_generator.make_token(user)
@@ -80,7 +87,6 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class TokenView(APIView):
-
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
