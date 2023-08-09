@@ -1,10 +1,14 @@
-
+from django.core.validators import validate_email
 from rest_framework import serializers, status
 from django.db import IntegrityError
 from rest_framework.response import Response
 
 from reviews.models import Comments, Genre, Category, Title, Review
 from user.models import User
+from .validators import validate_username
+
+MAX_EMAIL_LENGTH = 254
+MAX_USER_LENGTH = 150
 
 
 class TokenSerializer(serializers.ModelSerializer):
@@ -17,15 +21,16 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField(
-        regex=r'^[\w.@+-]+$',
-        max_length=150,
-        required=True
+    username = serializers.CharField(
+        max_length=MAX_USER_LENGTH,
+        required=True,
+        validators=[validate_username]
     )
 
     email = serializers.EmailField(
-        max_length=254,
-        required=True
+        max_length=MAX_EMAIL_LENGTH,
+        required=True,
+        validators=[validate_email]
     )
 
     class Meta:
@@ -37,18 +42,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
                   'bio',
                   'role')
 
-    def create(self, request, *args, **kwargs):
-        serializer = UserCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            user, _ = User.objects.get_or_create(
-                **serializer.validated_data)
-        except IntegrityError:
-            return Response(
-                'Такой логин или email уже существуют',
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
     def validate_username(self, value):
         if value == 'me':
@@ -92,7 +86,7 @@ class TitleReadSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True
     )
-    rating = serializers.FloatField()
+    rating = serializers.FloatField(read_only=True)
 
     class Meta:
         fields = '__all__'
@@ -125,7 +119,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
-        read_only_fields = ('title', 'author')
+        read_only_fields = ('title', )
 
     def validate(self, data):
         request = self.context['request']
@@ -148,4 +142,4 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Comments
-        read_only_fields = ('review', 'author')
+        read_only_fields = ('review',)
