@@ -1,10 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.core.validators import RegexValidator
 
+from .validators import validate_username
 MAX_LENGTH_NAME = 150
 MAX_LENGTH_EMAIL = 254
 MAX_LENGTH_CODE = 40
+
+
 class User(AbstractUser):
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -21,7 +23,7 @@ class User(AbstractUser):
         verbose_name='Логин',
         help_text='Укажите логин',
         unique=True,
-        validators=([RegexValidator(regex=r'^[\w.@+-]+$')]))
+        validators=[validate_username])
     email = models.EmailField(max_length=MAX_LENGTH_EMAIL,
                               verbose_name='E-mail',
                               help_text='Укажите e-mail',

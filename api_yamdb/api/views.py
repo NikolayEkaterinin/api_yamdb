@@ -31,6 +31,7 @@ from .serializers import (
 
 ERROR_LOGIN_EMAIL = 'Такой логин или email уже существуют'
 
+
 class SignUpView(APIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserCreateSerializer
