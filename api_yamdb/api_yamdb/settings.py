@@ -2,6 +2,12 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+# CONSTANTS
+MAX_EMAIL_LENGTH = 254
+MAX_USER_LENGTH = 150
+LETTERS_LIMIT = 15
+MAX_LENGTH = 200
+MAX_CODE_LENGTH = 40
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

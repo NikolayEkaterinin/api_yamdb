@@ -1,10 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .validators import validate_username
-MAX_LENGTH_NAME = 150
-MAX_LENGTH_EMAIL = 254
-MAX_LENGTH_CODE = 40
+from api_yamdb.settings import MAX_USER_LENGTH, MAX_EMAIL_LENGTH, MAX_CODE_LENGTH
+
+from api_yamdb.validators import validate_username
 
 
 class User(AbstractUser):
@@ -19,24 +18,24 @@ class User(AbstractUser):
     )
 
     username = models.CharField(
-        max_length=MAX_LENGTH_NAME,
+        max_length=MAX_USER_LENGTH,
         verbose_name='Логин',
         help_text='Укажите логин',
         unique=True,
         validators=[validate_username])
-    email = models.EmailField(max_length=MAX_LENGTH_EMAIL,
+    email = models.EmailField(max_length=MAX_EMAIL_LENGTH,
                               verbose_name='E-mail',
                               help_text='Укажите e-mail',
                               unique=True)
-    confirmation_code = models.CharField(max_length=MAX_LENGTH_CODE,
+    confirmation_code = models.CharField(max_length=MAX_CODE_LENGTH,
                                          blank=True,
                                          null=True,
                                          verbose_name='Проверочный код')
-    first_name = models.CharField(max_length=MAX_LENGTH_NAME,
+    first_name = models.CharField(max_length=MAX_USER_LENGTH,
                                   verbose_name='Имя',
                                   help_text='Ваше Имя',
                                   blank=True)
-    last_name = models.CharField(max_length=MAX_LENGTH_NAME,
+    last_name = models.CharField(max_length=MAX_USER_LENGTH,
                                  verbose_name='Фамилия',
                                  help_text='Ваша Фамилия',
                                  blank=True)

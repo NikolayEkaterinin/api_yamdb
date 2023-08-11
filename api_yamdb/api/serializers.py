@@ -3,10 +3,8 @@ from rest_framework import serializers
 
 from reviews.models import Comments, Genre, Category, Title, Review
 from user.models import User
-from .validators import validate_username
-
-MAX_EMAIL_LENGTH = 254
-MAX_USER_LENGTH = 150
+from api_yamdb.settings import MAX_EMAIL_LENGTH, MAX_USER_LENGTH
+from api_yamdb.validators import validate_username
 
 
 class TokenSerializer(serializers.ModelSerializer):
@@ -40,13 +38,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
                   'bio',
                   'role')
 
-    def validate_username(self, value):
-        if value == 'me':
-            raise serializers.ValidationError(
-                'Имя пользователя "me" запрещено'
-            )
-        return value
-
 
 class UsersSerializer(serializers.ModelSerializer):
 
@@ -78,15 +69,13 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
-    genre = GenreSerializer(
-        read_only=True,
-        many=True
-    )
+    genre = GenreSerializer(read_only=True, many=True)
     rating = serializers.FloatField(read_only=True)
 
     class Meta:
-        fields = '__all__'
         model = Title
+        fields = '__all__'
+        read_only_fields = ('category', 'rating', 'genre')
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):

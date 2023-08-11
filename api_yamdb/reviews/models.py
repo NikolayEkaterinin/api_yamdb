@@ -2,14 +2,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from user.models import User
+from api_yamdb.settings import LETTERS_LIMIT, MAX_LENGTH
 
-from .validators import validate_year
-
-LETTERS_LIMIT = 15
-MAX_LENGTH = 200
+from api_yamdb.validators import validate_year
 
 
-class ForCategoryAndGenreBaseModel(models.Model):
+class NameSlugBaseModel(models.Model):
     name = models.CharField('Название',
                             max_length=MAX_LENGTH)
     slug = models.SlugField('URL',
@@ -22,13 +20,13 @@ class ForCategoryAndGenreBaseModel(models.Model):
         return f'{self.name}'
 
 
-class Category(ForCategoryAndGenreBaseModel):
+class Category(NameSlugBaseModel):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
 
-class Genre(ForCategoryAndGenreBaseModel):
+class Genre(NameSlugBaseModel):
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
@@ -55,7 +53,6 @@ class Title(models.Model):
     )
     description = models.TextField(
         'Описание',
-        max_length=255,
         null=True,
         blank=True
     )
@@ -78,7 +75,7 @@ class Title(models.Model):
         return self.name
 
 
-class BaseComment(models.Model):
+class BaseModelData(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -99,7 +96,7 @@ class BaseComment(models.Model):
         return self.text[:LETTERS_LIMIT]
 
 
-class Review(BaseComment):
+class Review(BaseModelData):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -124,7 +121,7 @@ class Review(BaseComment):
         verbose_name_plural = 'Оценки'
 
 
-class Comments(BaseComment):
+class Comments(BaseModelData):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
